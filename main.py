@@ -2,6 +2,8 @@ from fastapi import FastAPI, Query, Path, Body
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated
+from datetime import datetime, time, timedelta
+from uuid import UUID
 
 
 app = FastAPI()
@@ -67,6 +69,7 @@ class Item(BaseModel):
     tax: float | None = None
     tags: set[str] = set()
     image: Image | None = None
+  
 
     model_config = {
         "json_schema_extra":{
@@ -135,3 +138,12 @@ async def create_multiple_images(images: list[Image]):
 @app.post("/index-weights/")
 async def create_index_weights(weights: dict[int, float]):
     return weights
+
+
+@app.put("/update/{item_id}")
+async def update_item(item_id: UUID, start_datetime: Annotated[datetime, Body()], end_datetime: Annotated[datetime, Body()], process_time: Annotated[timedelta, Body()], repeat_at: Annotated[time | None, Body()] = None):
+    start_process_time = start_datetime + process_time
+    return {"item_id": item_id, "start_datetime": start_datetime, "end_datetime": end_datetime, "process_time": process_time, "start_process_time": start_process_time, "repeat_at": repeat_at}
+
+
+
