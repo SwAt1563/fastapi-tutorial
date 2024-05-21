@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query, Path, Body
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated
 
 
@@ -55,13 +55,18 @@ async def read_item(skip: int = 0, limit: int = 10):
 async def read_item(q: str):
     return {"query": q}
 
+class Image(BaseModel):
+    url: HttpUrl
+    name: str
 
 # Request Body
 class Item(BaseModel):
     name: str
-    description: str | None = None
-    price: float
+    description: str | None = Field(default=None, title="The description of the item", max_length=300)
+    price: float = Field(gt=0, description="The price must be greater than zero")
     tax: float | None = None
+    tags: set[str] = set()
+    image: Image | None = None
 
 
 @app.post("/items/")
@@ -100,3 +105,12 @@ async def read_item(item_id: Annotated[str, Path(title="test", description="The 
 @app.put("/item/{item_id}")
 async def update_item(item_id: int, item: Annotated[Item | None, Body(embed=True)], q: str | None = None):
     return {"item_id": item_id, **item.model_dump(), "q": q}
+
+
+@app.post("/images/multiple/")
+async def create_multiple_images(images: list[Image]):
+    return images
+
+@app.post("/index-weights/")
+async def create_index_weights(weights: dict[int, float]):
+    return weights
