@@ -404,7 +404,7 @@ async def sleep2():
     print("awake")
     return {"message": "I'm back!"}
 
-# in parrallel
+# in parallel
 @app.get("/sleep3/")
 def sleep3():
     from time import sleep
