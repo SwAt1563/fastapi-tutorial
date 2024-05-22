@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path, Body
+from fastapi import FastAPI, Query, Path, Body, Cookie
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated
@@ -146,4 +146,6 @@ async def update_item(item_id: UUID, start_datetime: Annotated[datetime, Body()]
     return {"item_id": item_id, "start_datetime": start_datetime, "end_datetime": end_datetime, "process_time": process_time, "start_process_time": start_process_time, "repeat_at": repeat_at}
 
 
-
+@app.get("/cookie/")
+async def read_cookie(ads_id: Annotated[str, Cookie()] ):
+    return {"ads_id": ads_id}
