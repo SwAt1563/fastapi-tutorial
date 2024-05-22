@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path, Body, Cookie
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated
@@ -147,5 +147,9 @@ async def update_item(item_id: UUID, start_datetime: Annotated[datetime, Body()]
 
 
 @app.get("/cookie/")
-async def read_cookie(ads_id: Annotated[str, Cookie()] ):
+async def read_cookie(ads_id: Annotated[str | None, Cookie()] = None ):
     return {"ads_id": ads_id}
+
+@app.get("/header/")
+async def read_header(user_agent: Annotated[str | None, Header()] = None):
+    return {"User-Agent": user_agent}
