@@ -308,3 +308,13 @@ async def read_unicorn(name: str):
 async def read_tags():
     return [{"name": "Foo"}]
 
+# class Tags(Enum):
+#     items = "items"
+#     users = "users"
+
+
+# @app.get("/items/", tags=[Tags.items])
+# async def get_items():
+#     return ["Portal gun", "Plumbus"]
+
+
