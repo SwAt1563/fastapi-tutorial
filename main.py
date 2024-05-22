@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form
 from fastapi.responses import JSONResponse, RedirectResponse
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
@@ -244,3 +244,8 @@ async def read_keyword_weights():
 @app.get("/status_code/{item_id}", status_code=status.HTTP_200_OK)
 async def read_item_status_code(item_id: str):
     return items[item_id]
+
+# form
+@app.post("/login/")
+async def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    return {"username": username}
