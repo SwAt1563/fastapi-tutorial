@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
@@ -243,6 +243,8 @@ async def read_keyword_weights():
 # status code
 @app.get("/status_code/{item_id}", status_code=status.HTTP_200_OK)
 async def read_item_status_code(item_id: str):
+    if item_id not in items:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found", headers={"X-Error": "There goes my error"})
     return items[item_id]
 
 # form
@@ -279,4 +281,24 @@ async def get_file():
 </body>
     """
     return HTMLResponse(content=content)
+
+
+# Custom Exception
+
+class UnicornException(Exception):
+    def __init__(self, name: str):
+        self.name = name
+
+@app.exception_handler(UnicornException)
+async def unicorn_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=418,
+        content={"message": f"Oops! {exc.name} did something. There goes a rainbow..."},
+    )
+
+@app.get("/unicorns/{name}", response_model=dict[str, str])
+async def read_unicorn(name: str):
+    if name == "yolo":
+        raise UnicornException(name=name)
+    return {"unicorn_name": name}
 
