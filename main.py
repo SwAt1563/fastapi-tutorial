@@ -6,9 +6,31 @@ from pydantic import BaseModel, Field, HttpUrl, EmailStr
 from typing import Annotated, Any
 from datetime import datetime, time, timedelta
 from uuid import UUID
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+
+# CORS
+origins = [
+
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+"""
+max_age - Sets a maximum time in seconds for browsers to cache CORS responses. Defaults to 600.
+
+allow_credentials - Indicate that cookies should be supported for cross-origin requests. 
+Defaults to False. Also, allow_origins cannot be set to ['*'] for credentials to be allowed, origins must be specified.
+"""
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def read_root():
@@ -359,3 +381,34 @@ async def patch_item(item_id: str, item: Item):
     update_item_encoded = jsonable_encoder(item)
     items[item_id] = update_item_encoded
     return update_item_encoded
+
+
+
+# SLEEP
+
+# in sequence
+@app.get("/sleep1/")
+async def sleep1():
+    from time import sleep
+    print("sleeping")
+    sleep(5)
+    print("awake")
+    return {"message": "I'm back!"}
+
+# in concurrency
+@app.get("/sleep2/")
+async def sleep2():
+    import asyncio
+    print("sleeping")
+    await asyncio.sleep(5) # just function that need 5 seconds
+    print("awake")
+    return {"message": "I'm back!"}
+
+# in parrallel
+@app.get("/sleep3/")
+def sleep3():
+    from time import sleep
+    print("sleeping")
+    sleep(20)
+    print("awake")
+    return {"message": "I'm back!"}
