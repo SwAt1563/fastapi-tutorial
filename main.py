@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.encoders import jsonable_encoder
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
 from typing import Annotated, Any
@@ -336,3 +337,11 @@ async def read_summary():
 @app.get("/deprecated/", deprecated=True)
 async def read_deprecated():
     return {"deprecated": "This is deprecated"}
+
+
+# encoding
+@app.put("/encoding/{item_id}")
+async def update_item(item_id: str, item: Item):
+    json_compatible_item_data = jsonable_encoder(item) # convert Pydantic to json (sometime datetime need to convert to string)
+    return {"item_id": item_id, "item_data": json_compatible_item_data}
+
