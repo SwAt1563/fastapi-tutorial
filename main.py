@@ -234,3 +234,8 @@ async def read_items(item_id: str):
 #     return items[item_id]
 
 
+# keyword-weights
+@app.get("/keyword-weights/", response_model=dict[str, float])
+async def read_keyword_weights():
+    return {"foo": 2.3, "bar": 3.4}
+
