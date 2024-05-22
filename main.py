@@ -345,3 +345,17 @@ async def update_item(item_id: str, item: Item):
     json_compatible_item_data = jsonable_encoder(item) # convert Pydantic to json (sometime datetime need to convert to string)
     return {"item_id": item_id, "item_data": json_compatible_item_data}
 
+
+# put and patch
+# exp: "baz": {"name": "Baz", "description": None, "price": 50.2, "tax": 10.5, "tags": []},
+@app.put("/put/{item_id}")
+async def update_item(item_id: str, item: Item):
+    update_item_encoded = jsonable_encoder(item)
+    items[item_id] = update_item_encoded
+    return update_item_encoded
+
+@app.patch("/patch/{item_id}")
+async def patch_item(item_id: str, item: Item):
+    update_item_encoded = jsonable_encoder(item)
+    items[item_id] = update_item_encoded
+    return update_item_encoded
