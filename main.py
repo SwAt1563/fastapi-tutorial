@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Query, Path, Body, Cookie, Header
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response
+from fastapi.responses import JSONResponse, RedirectResponse
 from enum import Enum
-from pydantic import BaseModel, Field, HttpUrl
-from typing import Annotated
+from pydantic import BaseModel, Field, HttpUrl, EmailStr
+from typing import Annotated, Any
 from datetime import datetime, time, timedelta
 from uuid import UUID
 
@@ -153,3 +154,83 @@ async def read_cookie(ads_id: Annotated[str | None, Cookie()] = None ):
 @app.get("/header/")
 async def read_header(user_agent: Annotated[str | None, Header()] = None):
     return {"User-Agent": user_agent}
+
+# response model
+@app.get("/response_model/")
+async def read_response_model() -> Item:
+    return Item(name="Foo", price=35.4)
+
+@app.get("/response_model_param/", response_model=Item)
+async def read_response_model_param() -> Any:
+    return Item(name="Foo", price=3533.4)
+
+
+class BaseUser(BaseModel):
+    username: str
+    email: EmailStr
+    full_name: str | None = None
+
+class UserIn(BaseUser):
+    password: str
+
+
+@app.post("/user/")
+async def create_user(user: UserIn) -> BaseUser:
+    return user
+
+# @app.post("/user/", response_model=BaseUser)
+# async def create_user(user: UserIn) -> Any:
+#     return user
+
+@app.get('/teleport/')
+async def get_teleport() -> RedirectResponse:
+    return RedirectResponse(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+
+@app.get('/portal/', response_class=Response)
+async def get_portal(tele: bool = False) -> Any:
+    if tele:
+        return RedirectResponse(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    return JSONResponse(content={"message": "Welcome to the portal"})
+
+
+# # fail
+# @app.get("/portal")
+# async def get_portal(teleport: bool = False) -> Response | dict:
+#     if teleport:
+#         return RedirectResponse(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+#     return {"message": "Here's your interdimensional portal."}
+
+# # success
+# @app.get("/portal", response_model=None)
+# async def get_portal(teleport: bool = False) -> Response | dict:
+#     if teleport:
+#         return RedirectResponse(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+#     return {"message": "Here's your interdimensional portal."}
+
+
+
+items = {
+    "foo": {"name": "Foo", "price": 50.2},
+    "bar": {"name": "Bar", "description": "The bartenders", "price": 62, "tax": 20.2},
+    "baz": {"name": "Baz", "description": None, "price": 50.2, "tax": 10.5, "tags": []},
+}
+
+# response_model_exclude_unset: exclude the fields that are not set
+@app.get("/get_items/{item_id}", response_model=Item, response_model_exclude_unset=True)
+async def read_items(item_id: str):
+    return items[item_id]
+
+# @app.get(
+#     "/items/{item_id}/name",
+#     response_model=Item,
+#     response_model_include=["name", "description"],
+# )
+# async def read_item_name(item_id: str):
+#     return items[item_id]
+
+
+# @app.get("/items/{item_id}/public", response_model=Item, response_model_exclude=["tax"])
+# async def read_item_public_data(item_id: str):
+#     return items[item_id]
+
+
