@@ -302,3 +302,9 @@ async def read_unicorn(name: str):
         raise UnicornException(name=name)
     return {"unicorn_name": name}
 
+
+# tags for docs
+@app.get("/tags/", tags=["tags"])
+async def read_tags():
+    return [{"name": "Foo"}]
+
