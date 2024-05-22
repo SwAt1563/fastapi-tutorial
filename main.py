@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile
+from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
 from typing import Annotated, Any
@@ -249,3 +249,34 @@ async def read_item_status_code(item_id: str):
 @app.post("/login/")
 async def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
     return {"username": username}
+
+
+# file upload
+@app.post("/uploadfile/")
+async def create_upload_file(file: Annotated[UploadFile, Form(description="The file to upload")]):
+    data = await file.read()
+    print(data)
+    return {"filename": file.filename}
+
+# multiple files
+@app.post("/multiple_files/")
+async def create_upload_files(files: list[UploadFile]):
+    return {"filenames": [file.filename for file in files]}
+
+# FILE FORM HTML
+@app.get("/file_form/")
+async def get_file():
+    content = """
+    <body>
+<form action="/uploadfile/" enctype="multipart/form-data" method="post">
+<input name="files" type="file">
+<input type="submit">
+</form>
+<form action="/multiple_files/" enctype="multipart/form-data" method="post">
+<input name="files" type="file" multiple>
+<input type="submit">
+</form>
+</body>
+    """
+    return HTMLResponse(content=content)
+
