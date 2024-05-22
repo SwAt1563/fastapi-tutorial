@@ -318,3 +318,16 @@ async def read_tags():
 #     return ["Portal gun", "Plumbus"]
 
 
+
+# summary and description
+@app.get("/summary/", summary="This is a summary")
+async def read_summary():
+    """
+    This is a description
+
+    - **name**: The name of the item
+    - **description**: The description of the item
+    - **price**: The price of the item
+    """
+    return {"summary": "This is a summary"}
+
