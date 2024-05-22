@@ -331,3 +331,8 @@ async def read_summary():
     """
     return {"summary": "This is a summary"}
 
+
+# deprecated
+@app.get("/deprecated/", deprecated=True)
+async def read_deprecated():
+    return {"deprecated": "This is deprecated"}
