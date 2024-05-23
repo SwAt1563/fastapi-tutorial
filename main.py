@@ -439,3 +439,14 @@ async def read_dependency2(product_params: Annotated[ProductParams, Depends()]):
     return {"q": product_params.q, "skip": product_params.skip, "limit": product_params.limit}
         
 
+# pydantic dependency
+class ItemParams(BaseModel):
+    q: str | None = None
+    skip: int = 0
+    limit: int = 10
+
+
+@app.get("/dependency3/")
+async def read_dependency3(item_params: Annotated[ItemParams, Depends()]):
+    return item_params.model_dump()
+
