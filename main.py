@@ -9,6 +9,8 @@ from uuid import UUID
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
+from fastapi.testclient import TestClient
+
 
 
 
@@ -70,6 +72,9 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
+
+
+
 # CORS
 origins = [
 
@@ -95,9 +100,21 @@ app.add_middleware(
 # Static Files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
+# Test
+client = TestClient(app)
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
+
+
+# it should be in sperate file
+# https://fastapi.tiangolo.com/tutorial/testing/
+def test_read_root():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"Hello": "World"}
 
 
 # this will override the '/items/{item_id}' route
