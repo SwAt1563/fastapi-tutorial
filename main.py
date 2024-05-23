@@ -487,3 +487,7 @@ async def read_items_dep():
 
 # Bigger Applications - Multiple Files
 # https://fastapi.tiangolo.com/tutorial/bigger-applications/
+
+
+# Global Dependencies
+# app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
