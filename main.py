@@ -541,3 +541,23 @@ async def read_security(token: Annotated[str, Depends(oauth2_scheme)]):
     return {"token": token}
 
 
+# Get current user
+
+class UserData(BaseModel):
+    username: str
+    email: EmailStr | None = None
+    full_name: str | None = None
+    disabled: bool = False
+
+def get_fake_user(token: str):
+    return UserData(username=token + "user")
+
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    user = get_fake_user(token)
+    return user
+    
+
+
+@app.get("/security2/")
+async def read_security2(current_user: Annotated[UserData, Depends(get_current_user)]):
+    return current_user
