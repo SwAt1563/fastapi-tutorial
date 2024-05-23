@@ -507,3 +507,25 @@ async def get_db():
 @app.get("/db/")
 async def read_db(db: Annotated[dict, Depends(get_db)]):
     return db
+
+# context managers
+
+class MyContextManger:
+    def __init__(self):
+        # self.db = DBSession()
+        print("init")
+    def __enter__(self):
+        print("enter")
+        # return self.db
+        return self
+    def __exit__(self, exc_type, exc_value, traceback):
+        print("exit")
+        # self.db.close()
+        return True
+    
+@app.get("/context_manager/")
+async def read_context_manager():
+    with MyContextManger() as cm:
+        print("inside")
+        return {"message": "Hello"}
+    
