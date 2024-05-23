@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile, HTTPException
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile, HTTPException, Depends
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from fastapi.encoders import jsonable_encoder
 from enum import Enum
@@ -412,3 +412,15 @@ def sleep3():
     sleep(20)
     print("awake")
     return {"message": "I'm back!"}
+
+
+
+# Dependency Injection
+async def common_parameters(q: str | None = None, skip: int = 0, limit: int = 10):
+    return {"q": q, "skip": skip, "limit": limit}
+
+CommonDep = Annotated[dict, Depends(common_parameters)]
+@app.get("/dependency/")
+async def read_dependency(commons: CommonDep):
+    return commons
+
