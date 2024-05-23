@@ -428,7 +428,7 @@ async def read_dependency(commons: CommonDep):
 # class Dependency
 
 class ProductParams:
-    def __init__(self, q: str | None = None, skip: int = 0, limit: int = 10):
+    def __init__(self, q: str | None = None, skip: int = 0, limit: Annotated[int, Body()] = 10):
         self.q = q
         self.skip = skip
         self.limit = limit
@@ -439,7 +439,7 @@ async def read_dependency2(product_params: Annotated[ProductParams, Depends()]):
     return {"q": product_params.q, "skip": product_params.skip, "limit": product_params.limit}
         
 
-# pydantic dependency
+# pydantic dependency | not good if you want to use Body, and other fields
 class ItemParams(BaseModel):
     q: str | None = None
     skip: int = 0
