@@ -8,6 +8,7 @@ from datetime import datetime, time, timedelta
 from uuid import UUID
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.staticfiles import StaticFiles
 
 
 
@@ -89,6 +90,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Static Files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 async def read_root():
