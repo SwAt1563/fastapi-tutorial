@@ -557,7 +557,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
     
 
-
 @app.get("/security2/")
 async def read_security2(current_user: Annotated[UserData, Depends(get_current_user)]):
     return current_user
+
