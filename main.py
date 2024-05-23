@@ -463,3 +463,25 @@ async def query_or_cookie_extractor(q: Annotated[str, Depends(query_extractor)],
 @app.get("/dependency4/")
 async def read_dependency4(query_or_default: str = Depends(query_or_cookie_extractor)):
     return {"q_or_cookie": query_or_default}
+
+
+# Dependencies in path operation decorators
+
+async def verify_token(x_token: Annotated[str, Header()]):
+    if x_token != "fake-super-secret-token":
+        raise HTTPException(status_code=400, detail="X-Token header invalid")
+
+
+async def verify_key(x_key: Annotated[str, Header()]):
+    if x_key != "fake-super-secret-key":
+        raise HTTPException(status_code=400, detail="X-Key header invalid")
+    return x_key
+
+
+@app.get("/items_dep/", dependencies=[Depends(verify_token), Depends(verify_key)])
+async def read_items_dep():
+    return [{"item": "Foo"}, {"item": "Bar"}]
+
+
+
+
