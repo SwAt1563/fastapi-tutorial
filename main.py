@@ -450,3 +450,16 @@ class ItemParams(BaseModel):
 async def read_dependency3(item_params: Annotated[ItemParams, Depends()]):
     return item_params.model_dump()
 
+
+# sub-dependency
+async def query_extractor(q: str | None = None):
+    return q
+
+async def query_or_cookie_extractor(q: Annotated[str, Depends(query_extractor)], last_query: Annotated[str | None, Cookie()] = None):
+    if not q:
+        return last_query
+    return q
+
+@app.get("/dependency4/")
+async def read_dependency4(query_or_default: str = Depends(query_or_cookie_extractor)):
+    return {"q_or_cookie": query_or_default}
