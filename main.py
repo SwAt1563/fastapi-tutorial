@@ -422,5 +422,20 @@ async def common_parameters(q: str | None = None, skip: int = 0, limit: int = 10
 CommonDep = Annotated[dict, Depends(common_parameters)]
 @app.get("/dependency/")
 async def read_dependency(commons: CommonDep):
+    
     return commons
+
+# class Dependency
+
+class ProductParams:
+    def __init__(self, q: str | None = None, skip: int = 0, limit: int = 10):
+        self.q = q
+        self.skip = skip
+        self.limit = limit
+
+
+@app.get("/dependency2/")
+async def read_dependency2(product_params: Annotated[ProductParams, Depends()]):
+    return {"q": product_params.q, "skip": product_params.skip, "limit": product_params.limit}
+        
 
