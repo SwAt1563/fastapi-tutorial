@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile, HTTPException, Depends, Request
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile, HTTPException, Depends, Request, BackgroundTasks
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from fastapi.encoders import jsonable_encoder
 from enum import Enum
@@ -13,6 +13,7 @@ app = FastAPI()
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
+    from time import time
     start_time = time()
     response = await call_next(request)
     process_time = time() - start_time
@@ -568,4 +569,16 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 @app.get("/security2/")
 async def read_security2(current_user: Annotated[UserData, Depends(get_current_user)]):
     return current_user
+
+# background tasks
+
+def write_notification(email: str, message=""):
+    with open("log.txt", mode="w") as email_file:
+        content = f"notification for {email}: {message}"
+        email_file.write(content)
+
+@app.post("/send-notification/{email}")
+async def send_notification(email: str, background_tasks: BackgroundTasks):
+    background_tasks.add_task(write_notification, email, message="some notification")
+    return {"message": "Message sent in the background"}
 
