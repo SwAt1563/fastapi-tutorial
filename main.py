@@ -491,3 +491,19 @@ async def read_items_dep():
 
 # Global Dependencies
 # app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
+
+
+
+# Dependencies with yield
+
+async def get_db():
+    db = {"db_connection": "db_connection"}
+    try:
+        yield db
+    finally:
+        # db.close()
+        pass
+
+@app.get("/db/")
+async def read_db(db: Annotated[dict, Depends(get_db)]):
+    return db
