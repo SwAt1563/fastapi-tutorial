@@ -7,7 +7,7 @@ from typing import Annotated, Any
 from datetime import datetime, time, timedelta
 from uuid import UUID
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.security import OAuth2PasswordBearer
 
 app = FastAPI()
 
@@ -529,3 +529,15 @@ async def read_context_manager():
         print("inside")
         return {"message": "Hello"}
     
+
+# security
+
+# OAuth2PasswordBearer
+# But if your API was located at https://example.com/api/v1/, then it would refer to https://example.com/api/v1/token.
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+@app.get("/security/")
+async def read_security(token: Annotated[str, Depends(oauth2_scheme)]):
+    return {"token": token}
+
+
