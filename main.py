@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Response, status, Form, File, UploadFile, HTTPException, Depends, Request, BackgroundTasks
-from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse, ORJSONResponse
 from fastapi.encoders import jsonable_encoder
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
@@ -653,3 +653,15 @@ async def send_notification(email: str, background_tasks: BackgroundTasks):
     background_tasks.add_task(write_notification, email, message="some notification")
     return {"message": "Message sent in the background"}
 
+
+# ORJSONResponse
+
+# app = FastAPI(default_response_class=ORJSONResponse)
+"""
+Performance: orjson is faster at serializing Python data structures to JSON and deserializing JSON to Python objects.
+This can significantly improve the performance of web applications that rely heavily on JSON for their API responses.
+"""
+
+# @app.get("/items/")
+# async def read_items():
+#     return [{"item_id": "Foo"}]
