@@ -11,6 +11,9 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
 from fastapi.testclient import TestClient
 
+# environment variables
+from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 
@@ -807,3 +810,25 @@ async def test_root():
 
 
 """
+
+
+
+
+class Settings(BaseSettings):
+    KEY: str
+
+
+    model_config = SettingsConfigDict(env_file=".env")
+
+
+
+@lru_cache
+def get_settings():
+    return Settings()
+
+
+@app.get("/info")
+async def info(settings: Annotated[Settings, Depends(get_settings)]):
+    return {
+        "app_name": settings.KEY,
+    }
