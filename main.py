@@ -721,3 +721,56 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         data = await websocket.receive_text()
         await websocket.send_text(f"Message text was: {data}")
+
+
+
+# Lifespan Events
+"""
+Because this code is executed before the application starts taking requests, and right after it finishes handling requests,
+it covers the whole application lifespan (the word "lifespan" will be important in a second 😉).
+
+Use Case
+Let's start with an example use case and then see how to solve it with this.
+
+Let's imagine that you have some machine learning models that you want to use to handle requests. 🤖
+
+The same models are shared among requests, so, it's not one model per request, or one per user or something similar.
+
+Let's imagine that loading the model can take quite some time, because it has to read a lot of data from disk. So you don't want to do it for every request.
+
+You could load it at the top level of the module/file, but that would also mean that it would load the model even if you are just running a simple automated test, then that test would be slow because it would have to wait for the model to load before being able to run an independent part of the code.
+
+That's what we'll solve, let's load the model before the requests are handled, but only right before the application starts receiving requests, not while the code is being loaded
+
+"""
+
+# from contextlib import asynccontextmanager
+
+# from fastapi import FastAPI
+
+
+# def fake_answer_to_everything_ml_model(x: float):
+#     return x * 42
+
+
+# ml_models = {}
+
+
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     # Load the ML model
+#     ml_models["answer_to_everything"] = fake_answer_to_everything_ml_model
+#     yield
+#     # Clean up the ML models and release the resources
+#     ml_models.clear()
+
+
+# app = FastAPI(lifespan=lifespan)
+
+
+# @app.get("/predict")
+# async def predict(x: float):
+#     result = ml_models["answer_to_everything"](x)
+#     return {"result": result}
+
+
