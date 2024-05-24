@@ -665,3 +665,10 @@ This can significantly improve the performance of web applications that rely hea
 # @app.get("/items/")
 # async def read_items():
 #     return [{"item_id": "Foo"}]
+
+
+# use request
+@app.get("/request")
+def read_root(item_id: str, request: Request):
+    client_host = request.client.host
+    return {"client_host": client_host, "item_id": item_id}
